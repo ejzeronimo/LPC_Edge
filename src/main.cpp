@@ -1,55 +1,61 @@
-extern "C"
-{
-  void app_main()
-  {
-  }
-}
+// these are network realted
+#include <ArduinoJson.h>
+#include <vector>
 
-// //these are network realted
-// #include <ArduinoWebsockets.h>
-// #include <ArduinoJson.h>
-// #include <vector>
-// //these are mine config last so all the vars are okay
+// these are mine config last so all the vars are okay
 // #include <Lpx.h>
 // #include <Config.h>
-// //these are to disable brownout
-// #include <soc/soc.h>
-// #include <soc/rtc_cntl_reg.h>
 
-// //okay we need 2 threads
-// TaskHandle_t Task0;
-// TaskHandle_t Task1;
+#include <cJSON.h>
+#include <freertos/include/freertos/task.h>
 
-// void Task0code(void *pvParameters);
-// void Task1code(void *pvParameters);
+// these are to disable brownout
+#include <soc/soc.h>
+#include <soc/rtc_cntl_reg.h>
 
-// static SemaphoreHandle_t binsem;
+// okay we need 2 threads
+TaskHandle_t Task0;
+TaskHandle_t Task1;
+
+void Task0code(void *pvParameters);
+void Task1code(void *pvParameters);
+
+static SemaphoreHandle_t binsem;
 // static std::vector<CLpxCommand> globalCommands;
 
 // DynamicJsonDocument headRequest(512);
 
 // websockets::WebsocketsClient *client = new websockets::WebsocketsClient();
 
-// void setup()
-// {
-//   //this wraps out config, run here not in thread beacuse it might be needed
-//   LpxConfig.initConfig();
+// the main & setup for esp 32
+extern "C" void app_main()
+{
+  // this wraps out config, run here not in thread beacuse it might be needed
+  // LpxConfig.initConfig();
 
-//   binsem = xSemaphoreCreateBinary();
-//   xSemaphoreGive(binsem);
+  binsem = xSemaphoreCreateBinary();
+  xSemaphoreGive(binsem);
 
-//   setCpuFrequencyMhz(240);
+  setCpuFrequencyMhz(240);
 
-//   //create a task that will be executed in the Task0code() function, with priority 1 and executed on core 0
-//   xTaskCreatePinnedToCore(
-//       Task0code,   /* Task function. */
-//       "MainTask0", /* name of task. */
-//       10000,       /* Stack size of task */
-//       NULL,        /* parameter of the task */
-//       0,           /* priority of the task */
-//       &Task0,      /* Task handle to keep track of created task */
-//       0);          /* pin task to core 0 */
-// }
+  // create a task that will be executed in the Task0code() function, with priority 1 and executed on core 0
+  xTaskCreatePinnedToCore(
+      Task0code,   /* Task function. */
+      "MainTask0", /* name of task. */
+      10000,       /* Stack size of task */
+      NULL,        /* parameter of the task */
+      0,           /* priority of the task */
+      &Task0,      /* Task handle to keep track of created task */
+      0);          /* pin task to core 0 */
+}
+
+void Task0code(void *pvParameters)
+{
+  while (1)
+  {
+    printf("hello world?");
+  }
+}
 
 // //NOTE: defining some of the function used only in the IOT loop here
 // void invokeLocalCommand(JsonObject header, JsonArray commands)
