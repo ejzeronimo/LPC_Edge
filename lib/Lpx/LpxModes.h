@@ -1,5 +1,4 @@
 #pragma once
-#include <Arduino.h>
 #include <FastLED.h>
 #include "LpxPhysical.h"
 #include "LpxCommand.h"
